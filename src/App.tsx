@@ -788,7 +788,7 @@ function OrderUpdateModal({ order, onClose, onSave }: { order: Order; onClose: (
   const [failureCode, setFailureCode] = useState(order.failureCode ?? "");
   return <div className="modal-backdrop" onMouseDown={onClose}><div className="modal-card" onMouseDown={e => e.stopPropagation()}>
     <div className="modal-header"><div><div className="eyebrow">ORDER CONTROL</div><h3>Update {order.externalOrderId ?? order.id}</h3></div><button className="icon-button" onClick={onClose}><X size={18}/></button></div>
-    <div className="form-grid"><label><span>Status</span><select value={status} onChange={e => setStatus(e.target.value)}>{ORDER_STATUSES.map(v => <option key={v} value={v}>{v.replaceAll("_", " ")}</option>)}</select></label>
+    <div className="form-grid"><label><span>Status</span><select value={status} onChange={e => setStatus(e.target.value as OrderStatus)}>{ORDER_STATUSES.map(v => <option key={v} value={v}>{v.replaceAll("_", " ")}</option>)}</select></label>
     <label><span>Delivered quantity (max {integer.format(order.quantity)})</span><input type="number" min={order.delivered} max={order.quantity} value={delivered} onChange={e => setDelivered(e.target.value)}/></label>
     <label className="form-span-all"><span>Failure code</span><select value={failureCode} onChange={e => setFailureCode(e.target.value)}>{FAILURE_CODES.map(v => <option key={v} value={v}>{v || "None"}</option>)}</select></label></div>
     <div className="modal-actions"><button className="btn btn-ghost" onClick={onClose}>Cancel</button><button className="btn btn-primary" onClick={() => onSave(order, status, Number(delivered), failureCode)}>Save update</button></div>
