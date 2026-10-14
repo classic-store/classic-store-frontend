@@ -22,7 +22,7 @@ function productPayload(product: Product) {
     minCoins: product.minCoins,
     maxCoins: product.maxCoins,
     pricePerMillion: product.pricePerMillion,
-    currency: product.currency ?? "EGP",
+    currency: product.currency ?? "USD",
     status: product.status,
   };
 }

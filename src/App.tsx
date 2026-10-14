@@ -36,7 +36,7 @@ import { initialFinancials } from "./data/mockData";
 
 const currency = new Intl.NumberFormat("en-EG", {
   style: "currency",
-  currency: "EGP",
+  currency: "USD",
   maximumFractionDigits: 2,
 });
 
@@ -335,6 +335,7 @@ function App() {
                 <div className="hero-kicker"><ShieldCheck size={15} /> SECURE OPERATOR CONSOLE</div>
                 <h1>Run your store.<br /><span>Win the queue.</span></h1>
                 <p>Manage live stock, fulfill assigned orders, and keep your gaming storefront moving.</p>
+                <br/><br/><br/>
               </div>
               <div className="hero-metrics">
                 <div className="metric">
@@ -390,7 +391,7 @@ function App() {
                 <div className="title-with-icon"><Package size={19} /><h2>Products & limits</h2></div>
                 <p>Manage your active products, stock, and pricing bounds.</p>
               </div>
-              <div className="inline-actions"><span className="section-count">{products.length} products</span>{operatorRole === "ADMIN" && <button className="btn btn-primary" onClick={() => setSelectedProduct({ id: "", productCode: "", name: "", status: "Online", availability: "Available", stockLimit: 1, stockQuantity: 0, pricePerMillion: 0, minCoins: 1, maxCoins: 1, currency: "EGP" })}><Package size={14} /> Add product</button>}</div>
+              <div className="inline-actions"><span className="section-count">{products.length} products</span>{operatorRole === "ADMIN" && <button className="btn btn-primary" onClick={() => setSelectedProduct({ id: "", productCode: "", name: "", status: "Online", availability: "Available", stockLimit: 1, stockQuantity: 0, pricePerMillion: 0, minCoins: 1, maxCoins: 1, currency: "USD" })}><Package size={14} /> Add product</button>}</div>
             </div>
 
             <div className="product-grid">
@@ -554,7 +555,7 @@ function App() {
               <h3>Record a payout</h3>
               <div className="payout-entry-grid">
                 <label>Date<input type="date" value={payoutDate} onChange={e => setPayoutDate(e.target.value)} /></label>
-                <label>Amount (EGP)<input type="number" min="0.01" step="0.01" value={payoutAmount} onChange={e => setPayoutAmount(e.target.value)} placeholder="0.00" /></label>
+                <label>Amount (USD)<input type="number" min="0.01" step="0.01" value={payoutAmount} onChange={e => setPayoutAmount(e.target.value)} placeholder="0.00" /></label>
                 <label>Reference<input value={payoutReference} onChange={e => setPayoutReference(e.target.value)} placeholder="Transfer reference" /></label>
                 <label>Note<input value={payoutNote} onChange={e => setPayoutNote(e.target.value)} placeholder="Optional note" /></label>
                 <button className="btn btn-primary" onClick={addPayout}><Check size={14}/> Add payout</button>
