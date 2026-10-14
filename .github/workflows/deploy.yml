@@ -1,0 +1,67 @@
+name: Deploy Classic Store Frontend
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: classic-store-frontend-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      VPS_HOST: ${{ secrets.VPS_HOST }}
+      VPS_USER: ${{ secrets.VPS_USER }}
+    steps:
+      - name: Check out frontend repository
+        uses: actions/checkout@v4
+
+      - name: Configure SSH
+        env:
+          VPS_SSH_PRIVATE_KEY: ${{ secrets.VPS_SSH_PRIVATE_KEY }}
+          VPS_KNOWN_HOSTS: ${{ secrets.VPS_KNOWN_HOSTS }}
+        run: |
+          install -m 700 -d "$HOME/.ssh"
+          printf '%s\n' "$VPS_SSH_PRIVATE_KEY" > "$HOME/.ssh/id_ed25519"
+          chmod 600 "$HOME/.ssh/id_ed25519"
+          printf '%s\n' "$VPS_KNOWN_HOSTS" > "$HOME/.ssh/known_hosts"
+          chmod 600 "$HOME/.ssh/known_hosts"
+
+      - name: Sync frontend source to VPS
+        run: |
+          rsync -az --delete \
+            --exclude='.git/' \
+            --exclude='.github/' \
+            --exclude='node_modules/' \
+            --exclude='dist/' \
+            --exclude='.env' \
+            ./ "$VPS_USER@$VPS_HOST:/opt/classic-store/frontend/"
+
+      - name: Build, restart, and check frontend health
+        run: |
+          ssh -o BatchMode=yes "$VPS_USER@$VPS_HOST" '
+            set -eu
+            cd /opt/classic-store
+            docker compose build frontend
+            docker compose up -d --no-deps frontend
+            for attempt in $(seq 1 30); do
+              status=$(docker inspect -f "{{.State.Health.Status}}" classic-store-frontend 2>/dev/null || true)
+              if [ "$status" = "healthy" ]; then
+                docker compose ps frontend
+                exit 0
+              fi
+              if [ "$status" = "unhealthy" ]; then
+                docker compose logs --tail=100 frontend
+                exit 1
+              fi
+              sleep 2
+            done
+            docker compose logs --tail=100 frontend
+            exit 1
+          '
